@@ -1,0 +1,123 @@
+<!-- Orion — Visualization Panels: Network Map, Threat Radar, Log Stream, Security Gauge -->
+<section class="viz-grid">
+
+  <!-- ORION AI Analyst Module (Full Width, Top Priority) -->
+  <div class="viz-card viz-card--wide" id="aiAnalystCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <span style="font-size: 1.2em; margin-right: 4px;">🧠</span> Automated AI Triage
+      </h2>
+      <div class="viz-card__badge" style="color: #a78bfa; background: rgba(167, 139, 250, 0.15); animation: none;">Live Analysis</div>
+    </div>
+    <div class="viz-card__body viz-card__body--square" style="padding: 20px; overflow-y: auto;">
+      <div id="aiAnalystContent" style="height: 100%;">
+        <!-- Populated dynamically by ai-analyst.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Network Map with Animated Packet Flow -->
+  <div class="viz-card viz-card--wide" id="networkMapCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="3" r="2" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="3" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="8" y1="5" x2="3" y2="11" stroke="currentColor" stroke-width="1"/>
+          <line x1="8" y1="5" x2="13" y2="11" stroke="currentColor" stroke-width="1"/>
+          <line x1="5" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        Network Map
+      </h2>
+      <div class="viz-card__badge">Live</div>
+    </div>
+    <div class="viz-card__body viz-card__body--canvas">
+      <canvas id="networkMapCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Security Score Gauge -->
+  <div class="viz-card" id="securityGaugeCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1L2 4v4c0 3.5 2.5 6.5 6 7.5 3.5-1 6-4 6-7.5V4L8 1z" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          <path d="M5.5 8l2 2 3.5-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Security Score
+      </h2>
+    </div>
+    <div class="viz-card__body viz-card__body--gauge">
+      <canvas id="securityGaugeCanvas"></canvas>
+      <div class="gauge-label">
+        <span class="gauge-value" id="gaugeValue">0</span>
+        <span class="gauge-unit">/ 100</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Threat Radar Card -->
+  <div class="viz-card" id="threatRadarCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <span style="font-size: 1.2em; margin-right: 4px;">📡</span> Threat Radar
+      </h2>
+      <div class="viz-card__badge" id="radarThreatCount">Scanning…</div>
+    </div>
+    <div class="viz-card__body viz-card__body--canvas viz-card__body--square">
+      <canvas id="threatRadarCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Protocol Distribution Doughnut -->
+  <div class="viz-card" id="protocolDistCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          <path d="M8 2a6 6 0 016 6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M8 8l4.24-4.24" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+        </svg>
+        Protocol Distribution
+      </h2>
+      <div class="viz-card__count" id="protocolTotal">—</div>
+    </div>
+    <div class="viz-card__body viz-card__body--gauge" style="height: 260px;">
+      <canvas id="protocolCanvas" style="width:200px !important; height:200px !important;"></canvas>
+      <div id="protocolLegend" class="protocol-legend"></div>
+    </div>
+  </div>
+
+  <!-- Real-time Log Stream -->
+  <div class="viz-card viz-card--wide" id="logStreamCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/>
+          <path d="M4 5l2.5 2.5L4 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Log Stream
+      </h2>
+      <div class="log-controls">
+        <button class="viz-btn" id="logPauseBtn" aria-label="Pause logs">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="3" y="2" width="3" height="10" rx="0.5" fill="currentColor"/>
+            <rect x="8" y="2" width="3" height="10" rx="0.5" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="viz-btn" id="logClearBtn" aria-label="Clear logs">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <line x1="3" y1="3" x2="11" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="11" y1="3" x2="3" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="log-stream" id="logStream">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</section>

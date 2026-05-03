@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orion — Intrusion Detection System</title>
+  <meta name="description" content="Orion IDS Dashboard — Real-time network intrusion detection and threat monitoring system.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Parallax Background Layer -->
+  <div class="parallax-bg" id="parallaxBg"></div>
+
+  <!-- Component Slots — populated by JS component loader -->
+  <div id="topbar-slot"></div>
+  <div id="notif-slot"></div>
+
+  <div class="app-layout">
+    <div id="sidebar-slot"></div>
+
+    <main class="main" id="mainContent">
+      <!-- Page content loaded dynamically by the router -->
+    </main>
+  </div>
+
+  <div id="statusbar-slot"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script type="module" src="js/app.js?v=20260502-1"></script>
+</body>
+</html>

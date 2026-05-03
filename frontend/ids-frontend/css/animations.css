@@ -1,0 +1,43 @@
+/* ============================================================
+   Animations — Keyframes, Entrance Animations, Pulses
+   ============================================================ */
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.6); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered entrance for stat cards */
+.stat-card {
+  animation: fadeInUp 0.5s ease both;
+}
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+/* Charts entrance */
+.chart-card {
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 0.25s;
+}
+.chart-card:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+/* Alerts panel entrance */
+.alerts-panel {
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 0.35s;
+}

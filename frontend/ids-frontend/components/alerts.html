@@ -1,0 +1,30 @@
+<section class="alerts-panel" id="alertsPanel">
+  <div class="alerts-panel__header">
+    <h2 class="alerts-panel__title">Recent Alerts</h2>
+    <div class="alerts-panel__controls">
+      <div class="filter-group">
+        <button class="filter-btn filter-btn--active" data-severity="all">All</button>
+        <button class="filter-btn" data-severity="critical">Critical</button>
+        <button class="filter-btn" data-severity="high">High</button>
+        <button class="filter-btn" data-severity="medium">Medium</button>
+        <button class="filter-btn" data-severity="low">Low</button>
+      </div>
+    </div>
+  </div>
+  <div class="alerts-table-wrap">
+    <table class="alerts-table" id="alertsTable">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Source IP</th>
+          <th>Threat Type</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Intelligence</th>
+        </tr>
+      </thead>
+      <tbody id="alertsTableBody">
+        </tbody>
+    </table>
+  </div>
+</section>

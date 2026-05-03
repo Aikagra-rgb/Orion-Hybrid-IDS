@@ -1,0 +1,152 @@
+<!-- Orion — Settings Page -->
+
+<div class="settings-grid">
+  <div class="settings-card">
+    <div class="settings-card__header">
+      <h3 class="settings-card__title">Engine Configuration</h3>
+    </div>
+    <div class="settings-card__body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Detection Mode</span>
+          <span class="setting-desc">Switch between passive monitoring and active blocking</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="toggle__slider"></span>
+          </label>
+          <span class="setting-value">Active</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Signature Database</span>
+          <span class="setting-desc">Auto-update threat signatures from upstream feeds</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="toggle__slider"></span>
+          </label>
+          <span class="setting-value">Auto</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Deep Packet Inspection</span>
+          <span class="setting-desc">Enable full payload analysis for anomaly detection</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="toggle__slider"></span>
+          </label>
+          <span class="setting-value">Enabled</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Sensitivity Level</span>
+          <span class="setting-desc">Adjust alert sensitivity threshold</span>
+        </div>
+        <div class="setting-control">
+          <select class="setting-select">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Paranoid</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <div class="settings-card__header">
+      <h3 class="settings-card__title">Notifications</h3>
+    </div>
+    <div class="settings-card__body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Email Alerts</span>
+          <span class="setting-desc">Send critical alerts to security team</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Slack Integration</span>
+          <span class="setting-desc">Post alerts to #security-ops channel</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox">
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Sound Alerts</span>
+          <span class="setting-desc">Audio notifications for critical events</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox">
+            <span class="toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-card">
+    <div class="settings-card__header">
+      <h3 class="settings-card__title">System</h3>
+    </div>
+    <div class="settings-card__body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">IDS Engine Version</span>
+          <span class="setting-desc">Current engine build</span>
+        </div>
+        <div class="setting-control">
+          <span class="setting-value setting-value--mono">v2.4.1</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Log Retention</span>
+          <span class="setting-desc">Days to retain historical log data</span>
+        </div>
+        <div class="setting-control">
+          <select class="setting-select">
+            <option>7 days</option>
+            <option selected>30 days</option>
+            <option>90 days</option>
+            <option>365 days</option>
+          </select>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-label">Dark Mode</span>
+          <span class="setting-desc">Interface theme preference</span>
+        </div>
+        <div class="setting-control">
+          <label class="toggle">
+            <input type="checkbox" checked>
+            <span class="toggle__slider"></span>
+          </label>
+          <span class="setting-value">On</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

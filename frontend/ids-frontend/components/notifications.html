@@ -1,0 +1,44 @@
+<!-- Orion — Notification Dropdown Panel -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-panel__header">
+    <h3 class="notif-panel__title">Notifications</h3>
+    <button class="notif-panel__mark-read" id="markAllRead">Mark all read</button>
+  </div>
+  <div class="notif-panel__list" id="notifList">
+    <div class="notif-item notif-item--unread" data-severity="critical">
+      <div class="notif-item__dot notif-item__dot--red"></div>
+      <div class="notif-item__content">
+        <p class="notif-item__text">Critical: Port scan detected from <span class="notif-mono">192.168.1.105</span></p>
+        <span class="notif-item__time">2 min ago</span>
+      </div>
+    </div>
+    <div class="notif-item notif-item--unread" data-severity="critical">
+      <div class="notif-item__dot notif-item__dot--red"></div>
+      <div class="notif-item__content">
+        <p class="notif-item__text">Brute force SSH attempt blocked from <span class="notif-mono">10.0.0.34</span></p>
+        <span class="notif-item__time">7 min ago</span>
+      </div>
+    </div>
+    <div class="notif-item notif-item--unread" data-severity="high">
+      <div class="notif-item__dot notif-item__dot--orange"></div>
+      <div class="notif-item__content">
+        <p class="notif-item__text">DDoS mitigation activated — traffic spike on eth0</p>
+        <span class="notif-item__time">12 min ago</span>
+      </div>
+    </div>
+    <div class="notif-item" data-severity="medium">
+      <div class="notif-item__dot notif-item__dot--yellow"></div>
+      <div class="notif-item__content">
+        <p class="notif-item__text">Signature database updated to <span class="notif-mono">v4.8.2</span></p>
+        <span class="notif-item__time">1 hour ago</span>
+      </div>
+    </div>
+    <div class="notif-item" data-severity="info">
+      <div class="notif-item__dot notif-item__dot--blue"></div>
+      <div class="notif-item__content">
+        <p class="notif-item__text">Scheduled health check completed — all nodes healthy</p>
+        <span class="notif-item__time">2 hours ago</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<!-- Orion — Network Activity Page -->
+
+<section class="charts-grid">
+  <div class="chart-card" id="trafficChart">
+    <div class="chart-card__header">
+      <h2 class="chart-card__title">Network Traffic</h2>
+      <div class="chart-card__controls">
+        <button class="chart-tab chart-tab--active" data-range="1h">1H</button>
+        <button class="chart-tab" data-range="6h">6H</button>
+        <button class="chart-tab" data-range="24h">24H</button>
+        <button class="chart-tab" data-range="7d">7D</button>
+      </div>
+    </div>
+    <div class="chart-card__body">
+      <canvas id="trafficCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-card" id="threatChart">
+    <div class="chart-card__header">
+      <h2 class="chart-card__title">Bandwidth Utilization</h2>
+      <div class="chart-card__controls">
+        <button class="chart-tab chart-tab--active" data-range="24h">24H</button>
+        <button class="chart-tab" data-range="7d">7D</button>
+      </div>
+    </div>
+    <div class="chart-card__body">
+      <canvas id="threatCanvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<div class="viz-card viz-card--wide" id="networkMapCard" style="margin-bottom: 24px;">
+  <div class="viz-card__header">
+    <h2 class="viz-card__title">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="3" r="2" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="3" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="13" cy="13" r="2" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="8" y1="5" x2="3" y2="11" stroke="currentColor" stroke-width="1"/>
+        <line x1="8" y1="5" x2="13" y2="11" stroke="currentColor" stroke-width="1"/>
+        <line x1="5" y1="13" x2="11" y2="13" stroke="currentColor" stroke-width="1"/>
+      </svg>
+      Network Map
+    </h2>
+    <div class="viz-card__badge">Live</div>
+  </div>
+  <div class="viz-card__body viz-card__body--canvas">
+    <canvas id="networkMapCanvas"></canvas>
+  </div>
+</div>

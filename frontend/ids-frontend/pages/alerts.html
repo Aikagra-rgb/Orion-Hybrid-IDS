@@ -1,0 +1,82 @@
+<section class="stats-grid" id="statsGrid">
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Open Alerts</span>
+      <div class="stat-card__icon stat-card__icon--red">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="10" y1="6" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13" r="0.8" fill="currentColor"/></svg>
+      </div>
+    </div>
+    <div class="stat-card__value" data-target="23">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3m0 0L3 6m3-3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 5</span>
+      <span class="stat-period">new today</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Investigating</span>
+      <div class="stat-card__icon stat-card__icon--blue">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="13.5" y1="13.5" x2="17" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="stat-card__value" data-target="8">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--neutral">In progress</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Resolved Today</span>
+      <div class="stat-card__icon stat-card__icon--green">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="stat-card__value" data-target="41">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--up"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9V3m0 0L3 6m3-3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 12%</span>
+      <span class="stat-period">vs yesterday</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Avg Response Time</span>
+      <div class="stat-card__icon stat-card__icon--purple">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="10" y1="6" x2="10" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="10" x2="13" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="stat-card__value stat-card__value--health" data-target="4.2">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--neutral">minutes</span>
+    </div>
+  </div>
+</section>
+
+<section class="alerts-panel" id="alertsPanel">
+  <div class="alerts-panel__header">
+    <h2 class="alerts-panel__title">All Security Alerts</h2>
+    <div class="alerts-panel__controls">
+      <div class="filter-group">
+        <button class="filter-btn filter-btn--active" data-severity="all">All</button>
+        <button class="filter-btn" data-severity="critical">Critical</button>
+        <button class="filter-btn" data-severity="high">High</button>
+        <button class="filter-btn" data-severity="medium">Medium</button>
+        <button class="filter-btn" data-severity="low">Low</button>
+      </div>
+    </div>
+  </div>
+  <div class="alerts-table-wrap">
+    <table class="alerts-table" id="alertsTable">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Source IP</th>
+          <th>Threat Type</th>
+          <th>Severity</th>
+          <th>Status</th>
+          <th>Intelligence</th>
+        </tr>
+      </thead>
+      <tbody id="alertsTableBody"></tbody>
+    </table>
+  </div>
+</section>

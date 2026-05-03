@@ -1,0 +1,71 @@
+<section class="stats-grid" id="statsGrid">
+  
+  <div class="stat-card" id="cardPackets">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Network Packets</span>
+      <div class="stat-card__icon stat-card__icon--blue">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M2 14l4-4 3 3 5-6 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card__value" id="stat-packets" data-target="2847563">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--up">12.5%</span>
+      <span class="stat-period">vs last hour</span>
+    </div>
+  </div>
+
+  <div class="stat-card" id="cardThreats">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Threat Alerts</span>
+      <div class="stat-card__icon stat-card__icon--red">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2L18 17H2L10 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+          <line x1="10" y1="8" x2="10" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="10" cy="14.5" r="0.8" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card__value" id="stat-threats" data-target="0">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--down">8.2%</span>
+      <span class="stat-period">vs last hour</span>
+    </div>
+  </div>
+
+  <div class="stat-card" id="cardConnections">
+    <div class="stat-card__header">
+      <span class="stat-card__label">Blocked IPs</span>
+      <div class="stat-card__icon stat-card__icon--green">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="15" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="7" y1="10" x2="13" y2="10" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card__value" id="stat-ips" data-target="0">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--up">3.1%</span>
+      <span class="stat-period">vs last hour</span>
+    </div>
+  </div>
+
+  <div class="stat-card" id="cardHealth">
+    <div class="stat-card__header">
+      <span class="stat-card__label">System Health</span>
+      <div class="stat-card__icon stat-card__icon--purple">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="5" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M6 10h2l1-3 2 6 1-3h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-card__value stat-card__value--health" id="stat-health" data-target="100.0">0</div>
+    <div class="stat-card__meta">
+      <span class="stat-trend stat-trend--neutral">Stable</span>
+      <span class="stat-period">last 24h</span>
+    </div>
+  </div>
+</section>

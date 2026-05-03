@@ -1,0 +1,38 @@
+<!-- Orion — Bottom Status Bar -->
+<footer class="statusbar" id="statusbar">
+  <div class="statusbar__left">
+    <div class="statusbar__item">
+      <span class="statusbar__dot statusbar__dot--green"></span>
+      <span class="statusbar__text">All Systems Operational</span>
+    </div>
+    <div class="statusbar__separator"></div>
+    <div class="statusbar__item">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="6" y1="3" x2="6" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="6" x2="8" y2="7.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span class="statusbar__text">Uptime: <span id="uptimeValue" class="statusbar__mono">99.98%</span></span>
+    </div>
+    <div class="statusbar__separator"></div>
+    <div class="statusbar__item">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="3" width="10" height="6" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="3" y1="5" x2="3" y2="7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="5" y1="4.5" x2="5" y2="7.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="7" y1="5.5" x2="7" y2="7.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/><line x1="9" y1="5" x2="9" y2="7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+      <span class="statusbar__text">CPU: <span id="cpuValue" class="statusbar__mono">23%</span></span>
+    </div>
+    <div class="statusbar__separator"></div>
+    <div class="statusbar__item">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="2" y="1" width="8" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="3.5" y="5" width="5" height="4.5" rx="0.5" fill="currentColor" opacity="0.4"/></svg>
+      <span class="statusbar__text">Memory: <span id="memValue" class="statusbar__mono">4.2 GB</span></span>
+    </div>
+  </div>
+  <div class="statusbar__right">
+    <div class="statusbar__item">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="4" cy="6" r="1.5" stroke="currentColor" stroke-width="1"/><circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1"/><line x1="5.5" y1="6" x2="6.5" y2="6" stroke="currentColor" stroke-width="1"/></svg>
+      <span class="statusbar__text"><span id="connCount" class="statusbar__mono">1,284</span> connections</span>
+    </div>
+    <div class="statusbar__separator"></div>
+    <div class="statusbar__item">
+      <span class="statusbar__text">IDS Engine <span class="statusbar__mono">v2.4.1</span></span>
+    </div>
+    <div class="statusbar__separator"></div>
+    <div class="statusbar__item">
+      <span class="statusbar__text statusbar__mono" id="statusbarTime"></span>
+    </div>
+  </div>
+</footer>

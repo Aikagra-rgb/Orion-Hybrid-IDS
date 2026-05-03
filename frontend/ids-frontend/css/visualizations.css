@@ -1,0 +1,198 @@
+/* ============================================================
+   Visualizations — Network Map, Threat Radar, Log Stream, Gauge
+   ============================================================ */
+
+/* ---------- Viz Grid ---------- */
+.viz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.viz-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease both;
+  animation-delay: 0.3s;
+}
+
+.viz-card--wide {
+  grid-column: span 2;
+}
+
+.viz-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.viz-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.viz-card__badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--green);
+  background: var(--green-muted);
+  padding: 3px 8px;
+  border-radius: 100px;
+  animation: statusPulse 3s ease-in-out infinite;
+}
+
+.viz-card__count {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+}
+
+.viz-card__body--canvas {
+  position: relative;
+  height: 300px;
+  padding: 0;
+}
+
+.viz-card__body--canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viz-card__body--square {
+  height: 280px;
+}
+
+.viz-card__body--gauge {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 280px;
+  padding: 20px;
+}
+
+.viz-card__body--gauge canvas {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+.gauge-label {
+  position: absolute;
+  bottom: 40px;
+  text-align: center;
+}
+
+.gauge-value {
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.gauge-unit {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+/* ---------- Viz Controls ---------- */
+.viz-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
+}
+.viz-btn:hover {
+  color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.log-controls {
+  display: flex;
+  gap: 4px;
+}
+
+/* ---------- Log Stream ---------- */
+.log-stream {
+  height: 220px;
+  overflow-y: auto;
+  padding: 12px 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  background: var(--bg-primary);
+}
+
+.log-entry {
+  padding: 2px 20px;
+  display: flex;
+  gap: 12px;
+  transition: background var(--transition-fast);
+  white-space: nowrap;
+}
+.log-entry:hover {
+  background: var(--accent-glow);
+}
+
+.log-time {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.log-level {
+  flex-shrink: 0;
+  font-weight: 600;
+  min-width: 42px;
+}
+.log-level--info { color: var(--blue); }
+.log-level--warn { color: var(--yellow); }
+.log-level--error { color: var(--red); }
+.log-level--debug { color: var(--text-tertiary); }
+
+.log-source {
+  color: var(--purple);
+  flex-shrink: 0;
+}
+
+.log-msg {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .viz-grid {
+    grid-template-columns: 1fr;
+  }
+  .viz-card--wide {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .viz-card__body--canvas {
+    height: 240px;
+  }
+  .viz-card__body--square {
+    height: 240px;
+  }
+}

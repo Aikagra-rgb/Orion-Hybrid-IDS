@@ -1,0 +1,128 @@
+/* ============================================================
+   Base — Reset, Variables, Typography, Scrollbar
+   ============================================================ */
+
+/* ---------- CSS Custom Properties ---------- */
+:root {
+  /* Backgrounds */
+  --bg-primary: #0f1115;
+  --bg-secondary: #161920;
+  --bg-card: #1a1d24;
+  --bg-card-hover: #1e2129;
+  --bg-input: #12141a;
+  --bg-sidebar: #13161c;
+
+  /* Borders */
+  --border: #23272f;
+  --border-subtle: #1e2128;
+  --border-hover: #2d3340;
+
+  /* Text */
+  --text-primary: #e4e6eb;
+  --text-secondary: #8b8f9a;
+  --text-tertiary: #5c6170;
+  --text-inverse: #0f1115;
+
+  /* Accents */
+  --accent: #6b7cff;
+  --accent-hover: #7d8cff;
+  --accent-muted: rgba(107, 124, 255, 0.12);
+  --accent-glow: rgba(107, 124, 255, 0.06);
+
+  /* Semantic colors */
+  --green: #3dd68c;
+  --green-muted: rgba(61, 214, 140, 0.12);
+  --yellow: #f0c541;
+  --yellow-muted: rgba(240, 197, 65, 0.12);
+  --red: #ef5f5f;
+  --red-muted: rgba(239, 95, 95, 0.12);
+  --purple: #a78bfa;
+  --purple-muted: rgba(167, 139, 250, 0.12);
+  --blue: #6bb8ff;
+  --blue-muted: rgba(107, 184, 255, 0.12);
+  --orange: #f0915f;
+  --orange-muted: rgba(240, 145, 95, 0.12);
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 64px;
+  --topbar-height: 56px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Fonts */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}

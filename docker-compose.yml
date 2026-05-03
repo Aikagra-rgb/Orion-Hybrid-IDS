@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  orion-ids:
+    build: .
+    container_name: orion_hybrid_ids
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./alerts.db:/app/alerts.db
+    restart: unless-stopped
