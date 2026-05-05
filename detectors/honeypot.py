@@ -19,6 +19,7 @@ import socket
 import threading
 import random
 import time
+from utils.threat_intel import enrich_ip
 
 # ── Deception service banners ─────────────────────────────────────────────────
 # Rotate these to make fingerprinting harder
@@ -172,7 +173,16 @@ class DynamicHoneypot:
 
         # ── Persist to database ───────────────────────────────────────────────
         alert_type = f"Honeypot Interaction — port {port}"
-        self.db.save_alert(alert_type, "Critical", attacker_ip, ai_report=analysis)
+        geo = enrich_ip(attacker_ip)
+        protection_action = "Honeypot captured payload; reputation score increased"
+        self.db.save_alert(
+            alert_type,
+            "Critical",
+            attacker_ip,
+            ai_report=analysis,
+            geo=geo,
+            protection_action=protection_action,
+        )
 
         # ── Update reputation score ───────────────────────────────────────────
         if self.rep_manager and hasattr(self.rep_manager, "update_score"):
@@ -191,5 +201,5 @@ class DynamicHoneypot:
         if analysis:
             print(analysis)
         else:
-            print("  [AI triage unavailable — check GEMINI_API_KEY in .env]")
+            print("  [AI triage unavailable - check AI_ANALYST_PROVIDER/MISTRAL_API_KEY or Ollama]")
         print(f"{sep}\n")

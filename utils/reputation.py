@@ -13,6 +13,18 @@ class ReputationManager:
         self.db = db_manager
         # {ip: blacklisted_at_timestamp}
         self.blacklisted_ips: dict[str, float] = {}
+        self._load_persisted_blacklist()
+
+    def _load_persisted_blacklist(self):
+        now = time.time()
+        with self.db.lock:
+            self.db.cursor.execute(
+                "SELECT ip FROM reputation WHERE score >= ?",
+                (BLACKLIST_THRESHOLD,),
+            )
+            rows = self.db.cursor.fetchall()
+        for row in rows:
+            self.blacklisted_ips[row[0]] = now
 
     def update_score(self, ip: str, delta: int = 10) -> float:
         """
@@ -59,3 +71,12 @@ class ReputationManager:
                 return True
             del self.blacklisted_ips[ip]
         return False
+
+    def protection_action_for_score(self, ip: str, score: float) -> str:
+        if self.is_blacklisted(ip) or score >= BLACKLIST_THRESHOLD:
+            return "Blocked by reputation threshold"
+        if score >= BLACKLIST_THRESHOLD * 0.7:
+            return "High-risk watchlist; block on next confirmed hit"
+        if score > 0:
+            return "Monitored with reputation scoring and AI triage"
+        return "Observed only"

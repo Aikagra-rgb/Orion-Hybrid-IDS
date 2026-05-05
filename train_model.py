@@ -20,13 +20,22 @@ Improvements over v1:
 
 import os
 import sys
+import json
+import datetime
 import numpy as np
 import pandas as pd
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-from sklearn.metrics import classification_report
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+)
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -37,6 +46,7 @@ from sklearn.preprocessing import StandardScaler
 
 FEATURES    = ["length", "proto", "ttl", "dport", "sport", "tcp_flags", "payload_size"]
 MODEL_PATH  = "model.pkl"
+METRICS_PATH = "model_metrics.json"
 N_ESTIMATORS = 200
 RANDOM_STATE = 42
 
@@ -184,10 +194,12 @@ def train_model():
     # ── Build combined dataset ────────────────────────────────────────────────
     X_syn, y_syn = _generate_synthetic(n_per_class=3000)
 
+    data_source = "synthetic"
     if X_nsl is not None:
         # Blend: NSL-KDD + synthetic for richer generalisation
         X = pd.concat([X_nsl, X_syn], ignore_index=True)
         y = pd.concat([y_nsl, y_syn], ignore_index=True)
+        data_source = "NSL-KDD + synthetic calibration traffic"
         print(f"[+] Blended dataset — {len(X):,} samples total.")
     else:
         X, y = X_syn, y_syn
@@ -221,14 +233,51 @@ def train_model():
     if cv_scores.mean() < 0.70:
         print("[!] Warning: Mean F1 < 0.70 — consider collecting more real data.")
 
+    # ── Holdout analytics ────────────────────────────────────────────────────
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.2,
+        stratify=y,
+        random_state=RANDOM_STATE,
+    )
+
+    print("\n[*] Training holdout model for analytics...")
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    y_proba = pipeline.predict_proba(X_test)[:, 1]
+    report = classification_report(y_test, y_pred, target_names=["Normal", "Attack"], output_dict=True)
+    cm = confusion_matrix(y_test, y_pred).tolist()
+
+    metrics = {
+        "generated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "model_path": MODEL_PATH,
+        "algorithm": "StandardScaler + calibrated RandomForestClassifier",
+        "data_source": data_source,
+        "features": FEATURES,
+        "samples_total": int(len(X)),
+        "samples_train": int(len(X_train)),
+        "samples_test": int(len(X_test)),
+        "accuracy": float(accuracy_score(y_test, y_pred)),
+        "precision": float(precision_score(y_test, y_pred, zero_division=0)),
+        "recall": float(recall_score(y_test, y_pred, zero_division=0)),
+        "f1": float(f1_score(y_test, y_pred, zero_division=0)),
+        "cv_f1_mean": float(cv_scores.mean()),
+        "cv_f1_std": float(cv_scores.std()),
+        "avg_attack_probability": float(np.mean(y_proba)),
+        "classification_report": report,
+        "confusion_matrix": cm,
+    }
+
+    print("\n[+] Holdout analytics report:")
+    print(classification_report(y_test, y_pred, target_names=["Normal", "Attack"]))
+    with open(METRICS_PATH, "w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"[+] Model analytics saved to '{METRICS_PATH}'")
+
     # ── Final fit on full dataset ─────────────────────────────────────────────
     print("\n[*] Training final model on full dataset...")
     pipeline.fit(X, y)
-
-    # ── Quick classification report ───────────────────────────────────────────
-    y_pred = pipeline.predict(X)
-    print("\n[+] Training-set report (expect near-perfect — use CV scores above for real accuracy):")
-    print(classification_report(y, y_pred, target_names=["Normal", "Attack"]))
 
     # ── Save ──────────────────────────────────────────────────────────────────
     joblib.dump(pipeline, MODEL_PATH)

@@ -26,7 +26,14 @@ class DatabaseManager:
                     type TEXT,
                     severity TEXT,
                     source_ip TEXT,
-                    ai_report TEXT 
+                    ai_report TEXT,
+                    confidence REAL,
+                    geo_country TEXT,
+                    geo_city TEXT,
+                    geo_latitude REAL,
+                    geo_longitude REAL,
+                    vpn_risk TEXT,
+                    protection_action TEXT
                 )
             ''')
             
@@ -38,6 +45,13 @@ class DatabaseManager:
                 )
             ''')
             self._ensure_column("alerts", "ai_report", "TEXT")
+            self._ensure_column("alerts", "confidence", "REAL")
+            self._ensure_column("alerts", "geo_country", "TEXT")
+            self._ensure_column("alerts", "geo_city", "TEXT")
+            self._ensure_column("alerts", "geo_latitude", "REAL")
+            self._ensure_column("alerts", "geo_longitude", "REAL")
+            self._ensure_column("alerts", "vpn_risk", "TEXT")
+            self._ensure_column("alerts", "protection_action", "TEXT")
             self.conn.commit()
 
     def _ensure_column(self, table_name, column_name, column_type):
@@ -46,13 +60,40 @@ class DatabaseManager:
         if column_name not in columns:
             self.cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}")
 
-    def save_alert(self, alert_type, severity, source_ip, ai_report=None):
+    def save_alert(
+        self,
+        alert_type,
+        severity,
+        source_ip,
+        ai_report=None,
+        confidence=None,
+        geo=None,
+        protection_action=None,
+    ):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        geo = geo or {}
         with self.lock:
             self.cursor.execute('''
-                INSERT INTO alerts (timestamp, type, severity, source_ip, ai_report)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (timestamp, alert_type, severity, source_ip, ai_report))
+                INSERT INTO alerts (
+                    timestamp, type, severity, source_ip, ai_report, confidence,
+                    geo_country, geo_city, geo_latitude, geo_longitude,
+                    vpn_risk, protection_action
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                timestamp,
+                alert_type,
+                severity,
+                source_ip,
+                ai_report,
+                confidence,
+                geo.get("country"),
+                geo.get("city"),
+                geo.get("latitude"),
+                geo.get("longitude"),
+                geo.get("vpn_risk"),
+                protection_action,
+            ))
             self.conn.commit()
             
             # Returns the ID of the new alert so the AI thread knows which row to update

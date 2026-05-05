@@ -1,73 +1,93 @@
 """
 Run this from your Orion-Hybrid-IDS folder:
     python check_ai.py
-It will tell you exactly what is wrong with your AI setup.
+
+This checks the AI Analyst provider configuration without exposing API keys.
+Set AI_ANALYST_LIVE_TEST=true if you want it to make one real LLM request.
 """
-import os, sys
 
-print("\n" + "="*55)
-print("  ORION AI ANALYST — DIAGNOSTIC CHECK")
-print("="*55)
+import os
+import sys
 
-# 1. dotenv
+
+print("\n" + "=" * 60)
+print("  ORION AI ANALYST - DIAGNOSTIC CHECK")
+print("=" * 60)
+
+
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
     print("[OK] python-dotenv loaded")
 except ImportError:
-    print("[FAIL] python-dotenv not installed — run: pip install python-dotenv")
+    print("[FAIL] python-dotenv not installed - run: pip install python-dotenv")
     sys.exit(1)
 
-# 2. anthropic SDK
+
 try:
-    import anthropic
-    print(f"[OK] anthropic SDK installed (v{anthropic.__version__})")
+    import httpx
+
+    print(f"[OK] httpx installed (v{httpx.__version__})")
 except ImportError:
-    print("[FAIL] anthropic not installed — run: pip install anthropic")
+    print("[FAIL] httpx not installed - run: pip install httpx")
     sys.exit(1)
 
-# 3. API key present
-key = os.getenv("ANTHROPIC_API_KEY", "").strip()
-if not key:
-    print("[FAIL] ANTHROPIC_API_KEY is not set in your .env file")
-    print("       Add this line to Orion-Hybrid-IDS/.env :")
-    print("       ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxx")
-    sys.exit(1)
 
-if key == "your_anthropic_api_key_here":
-    print("[FAIL] ANTHROPIC_API_KEY is still the placeholder value")
-    print("       Get your real key → https://console.anthropic.com/settings/keys")
-    sys.exit(1)
+provider = os.getenv("AI_ANALYST_PROVIDER", "auto").strip().lower()
+mistral_key = os.getenv("MISTRAL_API_KEY", "").strip()
+mistral_model = os.getenv("MISTRAL_MODEL", "mistral-small-latest").strip()
+ollama_model = os.getenv("OLLAMA_MODEL", "mistral").strip()
+ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
 
-if not key.startswith("sk-ant-"):
-    print(f"[WARN] Key starts with '{key[:12]}...' — expected 'sk-ant-...'")
+print("\n--- Configuration ---")
+print(f"AI_ANALYST_PROVIDER: {provider}")
+print(f"MISTRAL_MODEL      : {mistral_model}")
+print(f"OLLAMA_MODEL       : {ollama_model}")
+print(f"OLLAMA_BASE_URL    : {ollama_base_url}")
+
+if mistral_key:
+    print(f"MISTRAL_API_KEY    : set ({len(mistral_key)} chars, hidden)")
 else:
-    print(f"[OK] Key found: {key[:16]}...{key[-4:]}")
+    print("MISTRAL_API_KEY    : not set")
 
-# 4. Live API test
-print("\n--- Testing API connection ---")
-client = anthropic.Anthropic(api_key=key)
 
-for model in ("claude-haiku-4-5-20251001", "claude-3-haiku-20240307"):
-    print(f"Trying model: {model}  ...", end=" ", flush=True)
-    try:
-        r = client.messages.create(
-            model=model,
-            max_tokens=20,
-            messages=[{"role": "user", "content": "Say OK"}],
-        )
-        print(f"SUCCESS → '{r.content[0].text.strip()}'")
-        break
-    except anthropic.AuthenticationError as e:
-        print(f"FAIL — Invalid API key: {e}")
-        print("\n  Fix: Regenerate your key at https://console.anthropic.com/settings/keys")
-        sys.exit(1)
-    except anthropic.RateLimitError as e:
-        print(f"RATE LIMITED — but key is valid. {e}")
-        break
-    except anthropic.BadRequestError as e:
-        print(f"BAD REQUEST (400) — {e}")
-    except Exception as e:
-        print(f"ERROR — {type(e).__name__}: {e}")
+if provider in {"mistral", "mistralai"} and not mistral_key:
+    print("[WARN] Mistral selected but MISTRAL_API_KEY is missing.")
+    print("       Add MISTRAL_API_KEY=... to .env, or use AI_ANALYST_PROVIDER=ollama/offline.")
 
-print("\n" + "="*55 + "\n")
+if provider == "auto":
+    if mistral_key:
+        print("[OK] auto mode will use Mistral.")
+    elif os.getenv("OLLAMA_MODEL") or os.getenv("OLLAMA_BASE_URL"):
+        print("[OK] auto mode will use Ollama.")
+    else:
+        print("[OK] auto mode will use the built-in offline fallback.")
+
+
+print("\n--- Import test ---")
+try:
+    from detectors.ai_analyst import AIAnalyst
+
+    analyst = AIAnalyst()
+    print(f"[OK] AIAnalyst imported; active provider: {analyst._active_provider}")
+except Exception as e:
+    print(f"[FAIL] AIAnalyst import/init failed: {type(e).__name__}: {e}")
+    sys.exit(1)
+
+
+if os.getenv("AI_ANALYST_LIVE_TEST", "").strip().lower() in {"1", "true", "yes", "on"}:
+    print("\n--- Live analysis test ---")
+    report = analyst.analyze(
+        alert_type="Test Port Scan",
+        attacker_ip="127.0.0.1",
+        severity="Low",
+        extra_context="Diagnostic run only.",
+    )
+    print(report)
+else:
+    print("\n--- Live analysis test skipped ---")
+    print("Set AI_ANALYST_LIVE_TEST=true to make one real provider request.")
+
+
+print("\n" + "=" * 60 + "\n")

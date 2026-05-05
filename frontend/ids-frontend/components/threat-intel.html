@@ -1,0 +1,69 @@
+<section class="intel-grid">
+  <div class="viz-card" id="modelAnalyticsCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 13h12M3 10l3-3 2 2 5-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Model Analytics
+      </h2>
+      <div class="viz-card__badge">NSL-KDD</div>
+    </div>
+    <div class="intel-body">
+      <div class="metric-grid">
+        <div class="metric-tile"><span>Accuracy</span><strong id="modelAccuracy">N/A</strong></div>
+        <div class="metric-tile"><span>Precision</span><strong id="modelPrecision">N/A</strong></div>
+        <div class="metric-tile"><span>F1 Score</span><strong id="modelF1">N/A</strong></div>
+        <div class="metric-tile"><span>Probability</span><strong id="modelProbability">N/A</strong></div>
+      </div>
+      <div class="intel-meta">
+        <div><span>Dataset</span><strong id="modelDataSource">Not recorded</strong></div>
+        <div><span>Samples</span><strong id="modelSampleCount">N/A</strong></div>
+        <div><span>Latest ML Alert</span><strong id="modelLatestType">No scored alerts</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="viz-card" id="blockedIpsCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5L2.5 4v3.5c0 3.1 2.3 5.8 5.5 7 3.2-1.2 5.5-3.9 5.5-7V4L8 1.5z" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M5.5 8h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Blocked IPs
+      </h2>
+      <div class="viz-card__count" id="blockedIpsCount">0</div>
+    </div>
+    <div class="intel-list" id="blockedIpsList"></div>
+  </div>
+
+  <div class="viz-card" id="attackerGeoCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M2 8h12M8 1.5c1.5 1.7 2.2 3.8 2.2 6.5S9.5 12.8 8 14.5C6.5 12.8 5.8 10.7 5.8 8S6.5 3.2 8 1.5z" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        Attacker Geo
+      </h2>
+      <div class="viz-card__badge">Live</div>
+    </div>
+    <div class="intel-list" id="attackerGeoList"></div>
+  </div>
+
+  <div class="viz-card" id="vpnProtectionCard">
+    <div class="viz-card__header">
+      <h2 class="viz-card__title">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 7V5a5 5 0 0110 0v2" stroke="currentColor" stroke-width="1.2"/>
+          <rect x="2.5" y="7" width="11" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="8" cy="10.5" r="1" fill="currentColor"/>
+        </svg>
+        VPN Threat Protection
+      </h2>
+      <div class="viz-card__badge">Active</div>
+    </div>
+    <ul class="intel-points" id="vpnProtectionList"></ul>
+  </div>
+</section>

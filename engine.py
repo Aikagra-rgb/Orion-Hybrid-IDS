@@ -24,10 +24,14 @@ import os
 import threading
 import time
 from scapy.all import sniff, IP
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ── Core Utility Modules ──────────────────────────────────────────────────────
 from utils.database   import DatabaseManager
 from utils.reputation import ReputationManager
+from utils.threat_intel import enrich_ip
 
 # ── Detector Modules ──────────────────────────────────────────────────────────
 from detectors.ai_analyst  import AIAnalyst
@@ -69,6 +73,21 @@ fim                = FileIntegrityMonitor()
 
 # Pass rep_manager so honeypot can update IP reputation scores
 honeypot = DynamicHoneypot(ai_analyst, db, reputation_manager=rep_manager)
+
+ALERT_SUPPRESS_SECONDS = int(os.getenv("ORION_ALERT_SUPPRESS_SECONDS", "15"))
+_recent_alerts = {}
+_recent_alerts_lock = threading.Lock()
+
+
+def should_suppress_alert(source_ip: str, threat_type: str) -> bool:
+    now = time.time()
+    key = (source_ip, threat_type)
+    with _recent_alerts_lock:
+        last_seen = _recent_alerts.get(key, 0)
+        if now - last_seen < ALERT_SUPPRESS_SECONDS:
+            return True
+        _recent_alerts[key] = now
+    return False
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  HIDS BACKGROUND LOOP (File Integrity Monitor)
@@ -131,13 +150,16 @@ def process_packet(packet):
     confidence  = None
     features    = None
 
+    if hasattr(rep_manager, "is_blacklisted") and rep_manager.is_blacklisted(source_ip):
+        if not should_suppress_alert(source_ip, "Blocked IP traffic"):
+            print(f"[BLK]  {'Blocked':8s} {source_ip:15s} -> reputation threshold")
+        return
+
     # ── Phase 1: Signature Detection ──────────────────────────────────────────
     sig_alert = signature_detector.check(packet)
     if sig_alert:
         threat_type = sig_alert["type"]
         severity    = sig_alert["severity"]
-        # Print immediately so simulator output is visible in real-time
-        print(f"[SIG]  [{severity:8s}] {source_ip:15s} → {threat_type}")
 
     # ── Phase 2: ML / Behavioral Anomaly Detection ────────────────────────────
     if not threat_type:
@@ -148,19 +170,37 @@ def process_packet(packet):
             confidence  = ml_alert.get("confidence")
             features    = ml_alert.get("features")
 
-            conf_str = f" [{confidence:.1%}]" if confidence is not None else ""
-            print(f"[ML]   [{severity:8s}] {source_ip:15s} → {threat_type}{conf_str}")
-
     # ── Phase 3: Alert Orchestration ──────────────────────────────────────────
     if not threat_type:
         return  # Clean packet — nothing to do
+
+    if should_suppress_alert(source_ip, threat_type):
+        return
+
+    conf_str = f" [{confidence:.1%}]" if confidence is not None else ""
+    tag = "ML" if confidence is not None or (features and "ML Anomaly" in threat_type) else "SIG"
+    print(f"[{tag}]   [{severity:8s}] {source_ip:15s} → {threat_type}{conf_str}")
 
     # 3a. Update reputation score (small incremental penalty)
     if hasattr(rep_manager, "update_score"):
         rep_manager.update_score(source_ip)
 
     # 3b. Save alert to DB, capture the row ID for AI report attachment
-    alert_id = db.save_alert(threat_type, severity, source_ip)
+    geo = enrich_ip(source_ip)
+    score = rep_manager.get_score(source_ip) if hasattr(rep_manager, "get_score") else 0
+    protection_action = (
+        rep_manager.protection_action_for_score(source_ip, score)
+        if hasattr(rep_manager, "protection_action_for_score")
+        else "Observed"
+    )
+    alert_id = db.save_alert(
+        threat_type,
+        severity,
+        source_ip,
+        confidence=confidence,
+        geo=geo,
+        protection_action=protection_action,
+    )
 
     # 3c. Async AI triage ──────────────────────────────────────────────────────
     def _background_ai_triage(a_id, t_type, s_ip, sev, conf, feats):

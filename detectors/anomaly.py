@@ -36,6 +36,8 @@ class AnomalyDetector:
     PORT_DIVERSITY_THRESH  = 12
     # Minimum ML confidence to raise an alert (calibrated against real data)
     ML_CONFIDENCE_THRESHOLD = 0.65
+    # Prevent one noisy source from generating an alert for every packet.
+    BEHAVIOR_ALERT_COOLDOWN_SECONDS = 15
 
     def __init__(self, model_path="model.pkl"):
         self.model = None
@@ -50,6 +52,7 @@ class AnomalyDetector:
 
         # Per-IP behavioral state: {ip: deque([(timestamp, dport), ...])}
         self._ip_events: dict[str, deque] = defaultdict(deque)
+        self._behavior_last_alert: dict[tuple[str, str], float] = {}
 
     # ── Feature extraction ─────────────────────────────────────────────────────
 
@@ -109,22 +112,37 @@ class AnomalyDetector:
         unique_ports  = len({port for _, port in events})
 
         if packet_rate >= self.HIGH_RATE_THRESHOLD:
+            alert_type = "Behavioral Anomaly: High Packet Rate"
+            if self._is_behavior_alert_suppressed(src_ip, alert_type):
+                return None
             return {
-                "type"      : "Behavioral Anomaly: High Packet Rate",
+                "type"      : alert_type,
                 "severity"  : "High",
                 "confidence": min(packet_rate / (self.HIGH_RATE_THRESHOLD * 2), 1.0),
                 "features"  : {"packet_rate": packet_rate, "window_s": self.RATE_WINDOW_SECONDS}
             }
 
         if unique_ports >= self.PORT_DIVERSITY_THRESH:
+            alert_type = "Behavioral Anomaly: Port Scan"
+            if self._is_behavior_alert_suppressed(src_ip, alert_type):
+                return None
             return {
-                "type"      : "Behavioral Anomaly: Port Scan",
+                "type"      : alert_type,
                 "severity"  : "High",
                 "confidence": min(unique_ports / (self.PORT_DIVERSITY_THRESH * 2), 1.0),
                 "features"  : {"unique_ports": unique_ports, "window_s": self.RATE_WINDOW_SECONDS}
             }
 
         return None
+
+    def _is_behavior_alert_suppressed(self, src_ip: str, alert_type: str) -> bool:
+        now = time.time()
+        key = (src_ip, alert_type)
+        last_alert = self._behavior_last_alert.get(key, 0)
+        if now - last_alert < self.BEHAVIOR_ALERT_COOLDOWN_SECONDS:
+            return True
+        self._behavior_last_alert[key] = now
+        return False
 
     # ── Public API ─────────────────────────────────────────────────────────────
 

@@ -178,6 +178,154 @@
   text-overflow: ellipsis;
 }
 
+/* ---------- Threat Intel ---------- */
+.intel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.intel-body,
+.intel-list,
+.intel-points {
+  padding: 16px 20px 20px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric-tile {
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.metric-tile span,
+.intel-meta span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.metric-tile strong {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.intel-meta {
+  display: grid;
+  grid-template-columns: 1.2fr 0.7fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.intel-meta strong {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.intel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 208px;
+}
+
+.intel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.intel-row:last-child {
+  border-bottom: 0;
+}
+
+.intel-row__primary {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.intel-row__secondary {
+  margin-top: 3px;
+  font-size: 0.76rem;
+  color: var(--text-tertiary);
+}
+
+.intel-row__score {
+  min-width: 42px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.intel-pill {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--green);
+  background: var(--green-muted);
+}
+
+.intel-pill--risk {
+  color: var(--orange);
+  background: var(--orange-muted);
+}
+
+.intel-empty {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  text-align: center;
+  font-size: 0.84rem;
+}
+
+.intel-points {
+  margin: 0;
+  list-style: none;
+  min-height: 208px;
+}
+
+.intel-points li {
+  position: relative;
+  padding: 0 0 12px 16px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.intel-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .viz-grid {
@@ -185,6 +333,11 @@
   }
   .viz-card--wide {
     grid-column: span 1;
+  }
+  .intel-grid,
+  .metric-grid,
+  .intel-meta {
+    grid-template-columns: 1fr;
   }
 }
 

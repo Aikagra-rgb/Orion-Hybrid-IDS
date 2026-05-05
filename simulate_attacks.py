@@ -29,6 +29,9 @@ import random
 import socket
 import sys
 from scapy.all import IP, TCP, UDP, Raw, send, conf as scapy_conf
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Keep Scapy quiet about interface warnings
 scapy_conf.verb = 0

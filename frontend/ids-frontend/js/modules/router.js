@@ -11,6 +11,7 @@ import { initLogStream } from './log-stream.js?v=20260502-1';
 import { initSecurityGauge } from './security-gauge.js?v=20260502-1';
 import { initThreatRadar } from './threat-radar.js?v=20260502-1';
 import { initProtocolDist } from './protocol-dist.js?v=20260502-1';
+import { initThreatIntel } from './threat-intel.js?v=20260505-1';
 
 const PAGE_CONFIG = {
   dashboard: {
@@ -18,6 +19,7 @@ const PAGE_CONFIG = {
       'components/stats.html',
       'components/charts.html',
       'components/visualizations.html',
+      'components/threat-intel.html',
       'components/alerts.html',
     ],
     init: async () => {
@@ -32,6 +34,7 @@ const PAGE_CONFIG = {
         initSecurityGauge(),
         initThreatRadar(),
         initProtocolDist(),
+        initThreatIntel(),
       ];
     },
     title: 'Dashboard',
@@ -55,6 +58,7 @@ const PAGE_CONFIG = {
         initAiAnalyst(),
         initSecurityGauge(),
         initThreatRadar(),
+        initThreatIntel(),
       ];
     },
     title: 'Threat Detection',
