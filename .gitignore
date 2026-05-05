@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 model.pkl
 .vscode/
+dummy_system_config.txt
