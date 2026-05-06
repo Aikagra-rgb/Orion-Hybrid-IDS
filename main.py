@@ -50,27 +50,53 @@ def _new_console_flags() -> dict:
 
 
 def _sudo_cmd(cmd_list: list[str]) -> list[str]:
-    """On Linux, prepend sudo so Scapy gets raw-socket access (AF_PACKET)."""
+    """
+    On Linux, prepend sudo so Scapy gets raw-socket access (AF_PACKET).
+    Uses `sudo -E` to preserve the current environment (venv paths, .env vars).
+    """
     if os.name != "nt" and os.geteuid() != 0:
-        return ["sudo", *cmd_list]
+        return ["sudo", "-E", *cmd_list]
     return cmd_list
 
 
 def _open_in_terminal(cmd_list: list[str]) -> subprocess.Popen:
-    """Launch a command in a new visible terminal window (cross-platform)."""
+    """
+    Launch a command in a new visible terminal window (cross-platform).
+    On Kali Linux, tries qterminal first (Kali's default), then other common
+    terminal emulators.  Passes the full environment so venv and .env vars survive.
+    """
     if os.name == "nt":
         return subprocess.Popen(cmd_list, creationflags=subprocess.CREATE_NEW_CONSOLE)
-    # Linux: try common terminal emulators
-    for term in ["x-terminal-emulator", "xfce4-terminal", "gnome-terminal", "xterm"]:
+
+    # Build a shell command string that preserves the active venv
+    shell_cmd = " ".join(cmd_list)
+
+    # Linux: try common terminal emulators (Kali default: qterminal / xfce4-terminal)
+    for term in ["qterminal", "xfce4-terminal", "x-terminal-emulator",
+                 "gnome-terminal", "mate-terminal", "konsole", "xterm"]:
         try:
             if term == "gnome-terminal":
-                return subprocess.Popen([term, "--", *cmd_list])
+                return subprocess.Popen(
+                    [term, "--", "bash", "-c", shell_cmd + "; exec bash"],
+                    env=os.environ,
+                )
+            elif term == "konsole":
+                return subprocess.Popen(
+                    [term, "-e", "bash", "-c", shell_cmd + "; exec bash"],
+                    env=os.environ,
+                )
             else:
-                return subprocess.Popen([term, "-e", " ".join(cmd_list)])
+                # qterminal, xfce4-terminal, mate-terminal, xterm
+                return subprocess.Popen(
+                    [term, "-e", "bash", "-c", shell_cmd + "; exec bash"],
+                    env=os.environ,
+                )
         except FileNotFoundError:
             continue
+
     # Fallback: run in same terminal (no new window)
-    return subprocess.Popen(cmd_list)
+    print("  [!] No GUI terminal emulator found — running in this terminal.")
+    return subprocess.Popen(cmd_list, env=os.environ)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -82,15 +108,18 @@ def start_api():
         print("  [-] API is already running.")
         return
     print("  [*] Starting ORION API & Dashboard Server...")
-    api_cmd = _sudo_cmd([sys.executable, "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"])
+    # No sudo needed for API — it binds to 0.0.0.0:8000 (non-privileged port)
+    api_cmd = [sys.executable, "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
     _procs["api"] = subprocess.Popen(
         api_cmd,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.STDOUT,
+        env=os.environ,
     )
     time.sleep(1.5)
     if _is_alive("api"):
-        print("  [+] API Online → http://127.0.0.1:8000")
+        kali_ip = _detect_lan_ip()
+        print(f"  [+] API Online → http://{kali_ip}:8000  (also http://127.0.0.1:8000)")
     else:
         print("  [!] API failed to start. Check api.py and uvicorn installation.")
 
@@ -177,13 +206,26 @@ def _print_menu():
     print()
 
 
+def _detect_lan_ip() -> str:
+    """Best-effort detection of LAN IP for display purposes."""
+    import socket
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect(("8.8.8.8", 80))
+            return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
 def _tip():
+    lan_ip = _detect_lan_ip()
     tips = [
         "TIP: Watch the engine window for real-time [SIG] / [ML] / [AI] alerts.",
-        "TIP: On Linux, run with: sudo python main.py (or engine/API will fail).",
+        f"TIP: On Kali, run with:  sudo {sys.executable} main.py",
         "TIP: Set ORION_TARGET_IP=<your LAN IP> so the simulator sends over the real NIC.",
         "TIP: Run option 5 to retrain the ML model whenever you add new signatures.",
-        "TIP: Dashboard at http://<your-ip>:8000 — start option 1 first.",
+        f"TIP: Dashboard at http://{lan_ip}:8000 — start option 1 first.",
+        "TIP: Attack from Metasploitable 2 with: nmap, hydra, or nikto against this machine.",
     ]
     import random
     print(f"  \033[33m{random.choice(tips)}\033[0m\n")
