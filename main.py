@@ -49,6 +49,30 @@ def _new_console_flags() -> dict:
     return {}
 
 
+def _sudo_cmd(cmd_list: list[str]) -> list[str]:
+    """On Linux, prepend sudo so Scapy gets raw-socket access (AF_PACKET)."""
+    if os.name != "nt" and os.geteuid() != 0:
+        return ["sudo", *cmd_list]
+    return cmd_list
+
+
+def _open_in_terminal(cmd_list: list[str]) -> subprocess.Popen:
+    """Launch a command in a new visible terminal window (cross-platform)."""
+    if os.name == "nt":
+        return subprocess.Popen(cmd_list, creationflags=subprocess.CREATE_NEW_CONSOLE)
+    # Linux: try common terminal emulators
+    for term in ["x-terminal-emulator", "xfce4-terminal", "gnome-terminal", "xterm"]:
+        try:
+            if term == "gnome-terminal":
+                return subprocess.Popen([term, "--", *cmd_list])
+            else:
+                return subprocess.Popen([term, "-e", " ".join(cmd_list)])
+        except FileNotFoundError:
+            continue
+    # Fallback: run in same terminal (no new window)
+    return subprocess.Popen(cmd_list)
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 #  SUBSYSTEM LAUNCHERS
 # ═════════════════════════════════════════════════════════════════════════════
@@ -58,8 +82,9 @@ def start_api():
         print("  [-] API is already running.")
         return
     print("  [*] Starting ORION API & Dashboard Server...")
+    api_cmd = _sudo_cmd([sys.executable, "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"])
     _procs["api"] = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "api:app", "--host", "127.0.0.1", "--port", "8000"],
+        api_cmd,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.STDOUT,
     )
@@ -75,10 +100,8 @@ def start_engine():
         print("  [-] Engine is already running.")
         return
     print("  [*] Booting Hybrid IDS Engine (NIDS + HIDS + AI Analyst)...")
-    _procs["engine"] = subprocess.Popen(
-        [sys.executable, "engine.py"],
-        **_new_console_flags(),
-    )
+    engine_cmd = _sudo_cmd([sys.executable, "engine.py"])
+    _procs["engine"] = _open_in_terminal(engine_cmd)
     time.sleep(0.5)
     if _is_alive("engine"):
         print("  [+] Engine Online! (Running in a separate window — watch it for live alerts)")
@@ -91,10 +114,8 @@ def start_simulator():
         print("  [-] Simulator is already running.")
         return
     print("  [*] Launching Attack Simulation Suite...")
-    _procs["simulator"] = subprocess.Popen(
-        [sys.executable, "simulate_attacks.py"],
-        **_new_console_flags(),
-    )
+    sim_cmd = _sudo_cmd([sys.executable, "simulate_attacks.py"])
+    _procs["simulator"] = _open_in_terminal(sim_cmd)
     time.sleep(0.5)
     if _is_alive("simulator"):
         print("  [+] Simulator Online! (Running in a separate window)")
@@ -107,7 +128,6 @@ def train_model():
     print("  [*] Output will appear in a new terminal window.\n")
     proc = subprocess.Popen(
         [sys.executable, "train_model.py"],
-        **_new_console_flags(),
     )
     proc.wait()
     print("  [+] Training complete. Restart the engine to load the new model.")
@@ -160,10 +180,10 @@ def _print_menu():
 def _tip():
     tips = [
         "TIP: Watch the engine window for real-time [SIG] / [ML] / [AI] alerts.",
-        "TIP: Set ORION_CAPTURE_IFACE=\\Device\\NPF_Loopback to capture loopback on Windows.",
+        "TIP: On Linux, run with: sudo python main.py (or engine/API will fail).",
         "TIP: Set ORION_TARGET_IP=<your LAN IP> so the simulator sends over the real NIC.",
         "TIP: Run option 5 to retrain the ML model whenever you add new signatures.",
-        "TIP: Dashboard at http://127.0.0.1:8000 — start option 1 first.",
+        "TIP: Dashboard at http://<your-ip>:8000 — start option 1 first.",
     ]
     import random
     print(f"  \033[33m{random.choice(tips)}\033[0m\n")
