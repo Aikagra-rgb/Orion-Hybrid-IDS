@@ -35,46 +35,21 @@ except ImportError:
 
 
 provider = os.getenv("AI_ANALYST_PROVIDER", "auto").strip().lower()
-gemini_key = os.getenv("GEMINI_API_KEY", "").strip()
-gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip()
-mistral_key = os.getenv("MISTRAL_API_KEY", "").strip()
-mistral_model = os.getenv("MISTRAL_MODEL", "mistral-small-latest").strip()
 ollama_model = os.getenv("OLLAMA_MODEL", "mistral").strip()
 ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
 
 print("\n--- Configuration ---")
 print(f"AI_ANALYST_PROVIDER: {provider}")
-print(f"GEMINI_MODEL       : {gemini_model}")
-print(f"MISTRAL_MODEL      : {mistral_model}")
 print(f"OLLAMA_MODEL       : {ollama_model}")
 print(f"OLLAMA_BASE_URL    : {ollama_base_url}")
 
-if gemini_key:
-    print(f"GEMINI_API_KEY     : set ({len(gemini_key)} chars, hidden)")
-else:
-    print("GEMINI_API_KEY     : not set")
 
-if mistral_key:
-    print(f"MISTRAL_API_KEY    : set ({len(mistral_key)} chars, hidden)")
-else:
-    print("MISTRAL_API_KEY    : not set")
-
-
-if provider == "gemini" and not gemini_key:
-    print("[WARN] Gemini selected but GEMINI_API_KEY is missing.")
-    print("       Add GEMINI_API_KEY=... to .env, or use AI_ANALYST_PROVIDER=ollama/offline.")
-
-if provider in {"mistral", "mistralai"} and not mistral_key:
-    print("[WARN] Mistral selected but MISTRAL_API_KEY is missing.")
-    print("       Add MISTRAL_API_KEY=... to .env, or use AI_ANALYST_PROVIDER=ollama/offline.")
+if provider == "ollama" and not ollama_model:
+    print("[WARN] Ollama selected but OLLAMA_MODEL is not set.")
 
 if provider == "auto":
-    if gemini_key and not gemini_key.startswith("YOUR_KEY"):
-        print("[OK] auto mode will use Gemini.")
-    elif mistral_key and not mistral_key.startswith("your_"):
-        print("[OK] auto mode will use Mistral.")
-    elif os.getenv("OLLAMA_MODEL") or os.getenv("OLLAMA_BASE_URL"):
-        print("[OK] auto mode will use Ollama.")
+    if os.getenv("OLLAMA_MODEL") or os.getenv("OLLAMA_BASE_URL"):
+        print("[OK] auto mode will use local Ollama.")
     else:
         print("[OK] auto mode will use the built-in offline fallback.")
 

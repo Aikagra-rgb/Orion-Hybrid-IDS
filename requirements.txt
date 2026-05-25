@@ -6,5 +6,4 @@ scikit-learn
 pandas
 numpy
 python-dotenv
-google-generativeai
 httpx

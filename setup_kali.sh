@@ -90,10 +90,6 @@ AI_ANALYST_PROVIDER=ollama
 OLLAMA_MODEL=mistral
 OLLAMA_BASE_URL=http://localhost:11434
 
-# Option 2: Gemini (cloud — uncomment and add your API key)
-# AI_ANALYST_PROVIDER=gemini
-# GEMINI_API_KEY=YOUR_KEY_HERE
-
 # ── Network Capture ──────────────────────────────────────────
 # Auto-detected by setup_kali.sh on $(date '+%Y-%m-%d %H:%M')
 ORION_CAPTURE_IFACE=${DEFAULT_IFACE}
