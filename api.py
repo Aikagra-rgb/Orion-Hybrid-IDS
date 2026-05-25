@@ -47,12 +47,36 @@ def get_connection():
 
 def ensure_alert_schema(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='alerts'")
-    if cursor.fetchone() is None:
-        return
+    # Auto-create tables if they don't exist (prevents crash if API is started before Engine)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS alerts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp TEXT,
+            type TEXT,
+            severity TEXT,
+            source_ip TEXT,
+            ai_report TEXT,
+            confidence REAL,
+            geo_country TEXT,
+            geo_city TEXT,
+            geo_latitude REAL,
+            geo_longitude REAL,
+            vpn_risk TEXT,
+            protection_action TEXT
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS reputation (
+            ip TEXT PRIMARY KEY,
+            score REAL
+        )
+    ''')
+    
+    # Ensure all columns exist for schema migrations / updates
     cursor.execute("PRAGMA table_info(alerts)")
     columns = {row[1] for row in cursor.fetchall()}
     required = {
+        "ai_report": "TEXT",
         "confidence": "REAL",
         "geo_country": "TEXT",
         "geo_city": "TEXT",

@@ -84,6 +84,8 @@ class AIAnalyst:
         load_dotenv()
 
         self.provider = os.getenv("AI_ANALYST_PROVIDER", "auto").strip().lower()
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY", "").strip()
+        self.gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip()
         self.mistral_api_key = os.getenv("MISTRAL_API_KEY", "").strip()
         self.mistral_model = os.getenv("MISTRAL_MODEL", DEFAULT_MISTRAL_MODEL).strip()
         self.ollama_model = os.getenv("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL).strip()
@@ -107,6 +109,12 @@ class AIAnalyst:
             self._verify_provider()
 
     def _select_provider(self) -> str:
+        if self.provider == "gemini":
+            if not self.gemini_api_key or self.gemini_api_key.startswith("YOUR_KEY"):
+                self._init_error = "GEMINI_API_KEY is missing or still set to a placeholder."
+                return "offline"
+            return "gemini"
+
         if self.provider in {"mistral", "mistralai"}:
             if not self.mistral_api_key or self.mistral_api_key.startswith("your_"):
                 self._init_error = "MISTRAL_API_KEY is missing or still set to a placeholder."
@@ -123,17 +131,22 @@ class AIAnalyst:
             self._init_error = f"Unknown AI_ANALYST_PROVIDER={self.provider!r}; using offline fallback."
             return "offline"
 
+        if self.gemini_api_key and not self.gemini_api_key.startswith("YOUR_KEY") and not self.gemini_api_key.startswith("your_"):
+            return "gemini"
+
         if self.mistral_api_key and not self.mistral_api_key.startswith("your_"):
             return "mistral"
 
         if os.getenv("OLLAMA_MODEL") or os.getenv("OLLAMA_BASE_URL"):
             return "ollama"
 
-        self._init_error = "No Mistral key or Ollama config found; using offline fallback."
+        self._init_error = "No Gemini key, Mistral key, or Ollama config found; using offline fallback."
         return "offline"
 
     def _announce_provider(self):
-        if self._active_provider == "mistral":
+        if self._active_provider == "gemini":
+            print(f"[+] AI Analyst: using Gemini model '{self.gemini_model}'.")
+        elif self._active_provider == "mistral":
             print(f"[+] AI Analyst: using Mistral model '{self.mistral_model}'.")
         elif self._active_provider == "ollama":
             print(f"[+] AI Analyst: using local Ollama model '{self.ollama_model}' at {self.ollama_base_url}.")
@@ -142,7 +155,9 @@ class AIAnalyst:
 
     def _verify_provider(self):
         try:
-            if self._active_provider == "mistral":
+            if self._active_provider == "gemini":
+                self._call_gemini("Reply with OK only.")
+            elif self._active_provider == "mistral":
                 self._call_mistral("Reply with OK only.")
             elif self._active_provider == "ollama":
                 self._call_ollama("Reply with OK only.")
@@ -189,6 +204,8 @@ class AIAnalyst:
         last_error = None
         for attempt in range(self.MAX_RETRIES + 1):
             try:
+                if self._active_provider == "gemini":
+                    return self._call_gemini(prompt)
                 if self._active_provider == "mistral":
                     return self._call_mistral(prompt)
                 if self._active_provider == "ollama":
@@ -227,6 +244,26 @@ class AIAnalyst:
 
         print(f"[!] AI Analyst provider error: {last_error}")
         return self._with_fallback_note(offline_fallback, last_error or "provider unavailable")
+
+    def _call_gemini(self, prompt: str) -> str:
+        try:
+            import google.generativeai as genai
+        except ImportError:
+            raise ImportError("google-generativeai package is not installed. Run: pip install google-generativeai")
+
+        genai.configure(api_key=self.gemini_api_key)
+        model = genai.GenerativeModel(self.gemini_model)
+        
+        response = model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                temperature=0.2,
+                max_output_tokens=512,
+            )
+        )
+        if not response.text:
+            raise ValueError("Gemini returned an empty response.")
+        return response.text.strip()
 
     def _call_mistral(self, prompt: str) -> str:
         response = self._client.post(
