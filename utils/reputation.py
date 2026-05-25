@@ -64,12 +64,29 @@ class ReputationManager:
 
     def add_to_blacklist(self, ip: str):
         self.blacklisted_ips[ip] = time.time()
+        import os
+        if os.name != "nt":
+            import subprocess
+            try:
+                subprocess.run(["sudo", "iptables", "-A", "INPUT", "-s", ip, "-j", "DROP"], check=True)
+                print(f"[IPS] Active Firewall: Successfully added iptables drop rule for {ip}")
+            except Exception as e:
+                print(f"[IPS] Warning: Failed to apply iptables rule for {ip}: {e}")
 
     def is_blacklisted(self, ip: str) -> bool:
         if ip in self.blacklisted_ips:
             if time.time() - self.blacklisted_ips[ip] < BLACKLIST_DURATION:
                 return True
+            expired_ip = ip
             del self.blacklisted_ips[ip]
+            import os
+            if os.name != "nt":
+                import subprocess
+                try:
+                    subprocess.run(["sudo", "iptables", "-D", "INPUT", "-s", expired_ip, "-j", "DROP"], check=True)
+                    print(f"[IPS] Active Firewall: Removed iptables drop rule for {expired_ip}")
+                except Exception as e:
+                    pass
         return False
 
     def protection_action_for_score(self, ip: str, score: float) -> str:
